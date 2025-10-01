@@ -44,25 +44,39 @@
       </button>
     </div>
     <div class="main-bottom-row">
-      <span class="date-info">
-        <img src="assets/icons/calendar-new.svg" alt="calendar" />
-        <span style="font-weight: bold">Published:</span>
-        {{ card.publishedAt * 1000 | date : "MMM d, yyyy" }}
-      </span>
-      <span class="date-info">
-        <img src="assets/icons/calendar-new.svg" alt="calendar" />
-        <span style="font-weight: bold">Updated:</span>
-        {{ card.modifiedAt * 1000 | date : "MMM d, yyyy" }}
-      </span>
-      <span class="component-info">
-        <img src="assets/icons/content-copy-icon-new.svg" alt="component" />
-        {{ card.components?.[0]?.name }},
-        <span> versions: {{ card.components?.[0].versions }}</span>
-      </span>
-      <span class="desc-info">
-        <img src="assets/icons/desc-icon-new.svg" alt="desc" />
-        {{ card.summary }}
-      </span>
+      <div style="display: flex; align-items: center; gap: 16px">
+        <span class="date-info">
+          <img src="assets/icons/calendar-new.svg" alt="calendar" />
+          <span style="font-weight: bold">Published:</span>
+          {{ card.publishedAt * 1000 | date : "MMM d, yyyy" }}
+        </span>
+        <span class="component-info">
+          <img src="assets/icons/content-copy-icon-new.svg" alt="component" />
+          {{ card.components?.[0]?.name
+
+
+
+          }}<span *ngIf="card.components?.[0]?.versions"
+            >, versions: {{ card.components[0].versions }}</span
+          >
+        </span>
+      </div>
+      <div
+        style="margin-top: 4px; display: flex; align-items: center; gap: 16px"
+      >
+        <span
+          class="date-info"
+          style="display: inline-flex; align-items: center"
+        >
+          <img src="assets/icons/calendar-new.svg" alt="calendar" />
+          <span style="font-weight: bold">Updated:</span>
+          {{ card.modifiedAt * 1000 | date : "MMM d, yyyy" }}
+        </span>
+        <span class="desc-info">
+          <img src="assets/icons/desc-icon-new.svg" alt="desc" />
+          {{ card.summary }}
+        </span>
+      </div>
     </div>
   </div>
   <div class="vuln-card__right">

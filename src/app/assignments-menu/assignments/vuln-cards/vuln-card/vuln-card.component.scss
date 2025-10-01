@@ -68,6 +68,7 @@
   flex-direction: column;
   justify-content: center;
   min-width: 0;
+  max-width: 100%;
   padding: 0 16px;
 }
 
@@ -80,8 +81,8 @@
 
 .main-bottom-row {
   display: flex;
-  align-items: center;
-  gap: 18px;
+  flex-direction: column;
+  align-items: left;
   margin-top: 8px;
   flex-wrap: wrap;
 }
@@ -117,8 +118,7 @@
   align-items: center;
   font-size: 13px;
   color: #64748b;
-  gap: 4px;
-  max-width: 320px;
+  width: 50%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
