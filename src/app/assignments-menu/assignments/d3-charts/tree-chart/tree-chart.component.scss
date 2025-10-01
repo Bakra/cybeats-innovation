@@ -35,3 +35,31 @@
 h2 {
   text-align: center;
 }
+
+.tree-card {
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  transition: box-shadow 0.2s;
+  background: none;
+}
+
+.tree-card rect {
+  transition: fill 0.3s, stroke 0.3s;
+}
+
+.tree-card text {
+  font-size: 18px;
+  font-weight: bold;
+  fill: #263238;
+  pointer-events: none;
+}
+
+.tree-card .card-bottom {
+  font-size: 13px;
+  font-weight: bold;
+  fill: #263238;
+  opacity: 0.85;
+}

@@ -51,8 +51,7 @@ export class TreeChartComponent {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    this.margin = { top: 10, bottom: 10, left: 40, right: 10 };
-
+    this.margin = { top: 100, bottom: 100, left: 100, right: 100 };
     this.width = 928;
     this.renderTreeChart();
   }
@@ -67,7 +66,7 @@ export class TreeChartComponent {
     } else if (trent === "+") {
       this.width = this.width / 1.5;
     } else if (trent === "reset") {
-      this.width = 160 * this.root.height;
+      this.width = 300 * this.root.height;
     }
     this.update(null, this.root);
   }
@@ -76,18 +75,21 @@ export class TreeChartComponent {
     this.root = d3.hierarchy(this.chartData, (d) => {
       return d.children;
     });
-    this.width = Math.max(window.innerWidth, 160 * this.root.height); // Use max of window width and tree width
-    this.dx = 80;
-    //size of rect item
-    this.rectX = 200;
-    this.rectY = this.dx / 2;
 
-    this.dy =
-      (this.width - this.margin.right - this.margin.left) /
-        (1 + this.root.height) -
-      this.dx;
+    // Card dimensions
+    this.rectX = 240;
+    this.rectY = 60;
 
-    this.tree = d3.tree().nodeSize([this.dx, this.dy + this.rectX]);
+    // Vertical spacing between nodes
+    this.dx = 120;
+
+    // Calculate width based on tree depth
+    this.width = Math.max(window.innerWidth, 350 * this.root.height);
+
+    // Horizontal spacing between levels
+    this.dy = 300;
+
+    this.tree = d3.tree().nodeSize([this.dx, this.dy]);
 
     this.diagonal = d3
       .linkHorizontal()
@@ -122,9 +124,9 @@ export class TreeChartComponent {
     this.gLink = this.svg
       .append("g")
       .attr("fill", "none")
-      .attr("stroke", "black")
-      .attr("stroke-opacity", 0.4)
-      .attr("stroke-width", 1.5);
+      .attr("stroke", "#CBD5E1")
+      .attr("stroke-opacity", 0.6)
+      .attr("stroke-width", 2);
 
     this.gNode = this.svg
       .append("g")
@@ -133,36 +135,56 @@ export class TreeChartComponent {
 
     this.root.x0 = this.dy / 2;
     this.root.y0 = 0;
-    this.root
-      .descendants()
-      .forEach(
-        (
-          d: {
-            id: any;
-            _children: any;
-            children: null;
-            depth: any;
-            data: { name: string | any[] };
-          },
-          i: any
-        ) => {
-          d.id = i;
-          if (!this.isPreview) {
-            d._children = d.children;
-            if (d.depth && d.data.name.length !== 7) d.children = null;
-          }
+
+    // Assign colors to root level nodes first
+    const colors = [
+      "#9C27B0", // Purple
+      "#43C6AC", // Teal
+      "#FF9800", // Orange
+      "#2196F3", // Blue
+      "#E91E63", // Pink
+      "#009688", // Cyan
+      "#673AB7", // Deep Purple
+      "#FF5722", // Deep Orange
+    ];
+
+    this.root.descendants().forEach((d: any, i: any) => {
+      d.id = i;
+
+      // Assign color to root-level children (direct children of root)
+      if (d.depth === 1) {
+        d.data.groupColor = colors[i % colors.length];
+      }
+      // All descendants inherit from their ancestors
+      else if (d.depth > 1) {
+        let parent = d.parent;
+        while (parent && !parent.data.groupColor) {
+          parent = parent.parent;
         }
-      );
+        if (parent && parent.data.groupColor) {
+          d.data.groupColor = parent.data.groupColor;
+        }
+      }
+      // Root node gets a default color
+      else if (d.depth === 0) {
+        d.data.groupColor = "#999";
+      }
+
+      if (!this.isPreview) {
+        d._children = d.children;
+        if (d.depth && d.data.name.length !== 7) d.children = null;
+      }
+    });
 
     this.update(null, this.root);
   }
 
   update(event: any, source: any) {
-    const duration = event?.altKey ? 2500 : 500; // hold the alt key to slow down the transition
+    const duration = event?.altKey ? 2500 : 500;
     const nodes = this.root.descendants().reverse();
     const links = this.root.links();
 
-    // Compute the new tree layout.
+    // Compute the new tree layout
     this.tree(this.root);
 
     let left = this.root;
@@ -177,7 +199,7 @@ export class TreeChartComponent {
     const transition = this.svg
       .transition()
       .duration(duration)
-      .attr("height", height + this.rectX)
+      .attr("height", height)
       .attr("viewBox", [
         -this.margin.left,
         left.x - this.margin.top,
@@ -189,10 +211,10 @@ export class TreeChartComponent {
         window.ResizeObserver ? null : () => () => this.svg.dispatch("toggle")
       );
 
-    // Update the nodes…
+    // Update the nodes
     const node = this.gNode.selectAll("g").data(nodes, (d: any) => d.id);
 
-    // Enter any new nodes at the parent's previous position.
+    // Enter any new nodes at the parent's previous position
     const nodeEnter = node
       .enter()
       .append("g")
@@ -202,40 +224,102 @@ export class TreeChartComponent {
       .on("click", (event: any, d: { children: any; _children: any }) => {
         d.children = d.children ? null : d._children;
         this.update(event, d);
-      })
-      .on(
-        "mouseover",
-        (event: any, d: { children: any; _children: any; depth: number }) => {
-          // console.log({ depth: d.depth });
-        }
-      );
+      });
 
+    // Helper function to get node color
+    const getNodeColor = (d: any): string => {
+      // Always use the assigned groupColor
+      return d.data.groupColor || "#999";
+    };
+
+    // Card background with colored border
     nodeEnter
       .append("rect")
       .attr("width", this.rectX)
       .attr("height", this.rectY)
-      .attr("y", (d: { _children: any }) => -this.rectY / 2)
-      .attr("rx", 5)
-      .attr("ry", 5)
-      .attr("fill", (d: { _children: any }) => (d._children ? "#555" : "#999"))
-      .attr("stroke-width", 10);
+      .attr("y", -this.rectY / 2)
+      .attr("rx", 12)
+      .attr("ry", 12)
+      .attr("fill", "#fff")
+      .attr("stroke-width", 2.5)
+      .attr("stroke", (d: any) => getNodeColor(d))
+      .attr("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.1))");
 
+    // Icon background with group color
+    nodeEnter
+      .append("rect")
+      .attr("x", 12)
+      .attr("y", -this.rectY / 2 + 10)
+      .attr("width", 32)
+      .attr("height", 32)
+      .attr("rx", 8)
+      .attr("fill", (d: any) => getNodeColor(d));
+
+    // Icon image
+    nodeEnter
+      .append("image")
+      .attr("href", (d: any) => {
+        if (d.data.model === "org") {
+          return "/assets/icons/org-card-icon-item.svg";
+        } else if (d.data.model === "group") {
+          return "/assets/icons/group-card-icon-item.svg";
+        } else {
+          return "/assets/icons/asset-card-icon-item.svg";
+        }
+      })
+      .attr("x", 16)
+      .attr("y", -this.rectY / 2 + 14)
+      .attr("width", 24)
+      .attr("height", 24);
+
+    // Title text (name)
     nodeEnter
       .append("text")
-      .attr("dy", "0.31em")
-      .attr("x", (d: { _children: any }) =>
-        d._children ? this.rectX + 15 : this.rectX + 15
-      )
-      .attr("text-anchor", (d: { _children: any }) =>
-        d._children ? "end" : "start"
-      )
-      .text((d: { data: { name: any } }) => d.data.name)
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-width", 3)
-      .attr("stroke", "white")
-      .attr("paint-order", "stroke");
+      .attr("x", 54)
+      .attr("y", -this.rectY / 2 + 22)
+      .attr("text-anchor", "start")
+      .attr("font-size", "16px")
+      .attr("font-weight", "600")
+      .attr("fill", "#263238")
+      .text((d: { data: { name: any } }) => {
+        const name = d.data.name;
+        return name.length > 18 ? name.substring(0, 18) + "..." : name;
+      });
 
-    // Transition nodes to their new position.
+    // Subtitle (group/asset counts)
+    nodeEnter
+      .append("text")
+      .attr("x", 54)
+      .attr("y", -this.rectY / 2 + 40)
+      .attr("text-anchor", "start")
+      .attr("font-size", "13px")
+      .attr("font-weight", "500")
+      .attr("fill", "#64748B")
+      .text((d: any) => {
+        const g =
+          d.data.groupCount !== undefined ? `G-${d.data.groupCount}` : "G-0";
+        const a =
+          d.data.assetCount !== undefined ? `A-${d.data.assetCount}` : "A-0";
+        return `${g}/${a}`;
+      });
+
+    // Expand/collapse indicator (chevron)
+    nodeEnter
+      .append("text")
+      .attr("class", "expand-indicator")
+      .attr("x", this.rectX - 20)
+      .attr("y", 5)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "20px")
+      .attr("font-weight", "bold")
+      .attr("fill", "#94A3B8")
+      .attr("opacity", (d: any) => (d._children || d.children ? 1 : 0))
+      .text("›")
+      .attr("transform", (d: any) => {
+        return d.children ? `rotate(90, ${this.rectX - 20}, 5)` : "";
+      });
+
+    // Transition nodes to their new position
     const nodeUpdate = node
       .merge(nodeEnter)
       .transition(transition)
@@ -243,7 +327,17 @@ export class TreeChartComponent {
       .attr("fill-opacity", 1)
       .attr("stroke-opacity", 1);
 
-    // Transition exiting nodes to the parent's new position.
+    // Update chevron rotation
+    node
+      .merge(nodeEnter)
+      .select(".expand-indicator")
+      .transition(transition)
+      .attr("transform", (d: any) => {
+        return d.children ? `rotate(90, ${this.rectX - 20}, 5)` : "";
+      })
+      .attr("opacity", (d: any) => (d._children || d.children ? 1 : 0));
+
+    // Transition exiting nodes
     const nodeExit = node
       .exit()
       .transition(transition)
@@ -252,13 +346,14 @@ export class TreeChartComponent {
       .attr("fill-opacity", 0)
       .attr("stroke-opacity", 0);
 
-    // Update the links…
+    // Update the links
     const link = this.gLink
       .selectAll("path")
       .data(links, (d: { target: { id: any } }) => {
         return d.target.id;
       });
-    // Enter any new links at the parent's previous position.
+
+    // Enter new links
     const linkEnter = link
       .enter()
       .append("path")
@@ -267,10 +362,10 @@ export class TreeChartComponent {
         return this.diagonal({ source: o, target: o });
       });
 
-    // Transition links to their new position.
+    // Transition links to their new position
     link.merge(linkEnter).transition(transition).attr("d", this.diagonal);
 
-    // Transition exiting nodes to the parent's new position.
+    // Transition exiting links
     link
       .exit()
       .transition(transition)
@@ -280,7 +375,7 @@ export class TreeChartComponent {
         return this.diagonal({ source: o, target: o });
       });
 
-    // Stash the old positions for transition.
+    // Stash old positions for transition
     this.root.eachBefore((d: { x0: any; x: any; y0: any; y: any }) => {
       d.x0 = d.x;
       d.y0 = d.y;
