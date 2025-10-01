@@ -5,16 +5,31 @@
 }
 
 .tree-chart-full-size {
-  overflow: auto;
+  width: 100vw;
+  min-width: 100vw;
+  overflow-x: auto;
   height: calc(100vh - 113px);
-  width: max-content;
   margin: 0;
 }
 
 .tree-chart-wrapper {
-  width: 100%;
-  overflow: auto;
+  width: 100vw;
+  overflow-x: auto;
   height: 100%;
+}
+
+#tree {
+  width: 100%;
+  min-width: fit-content;
+  overflow-x: auto;
+  display: flex;
+  justify-content: flex-start;
+}
+
+#tree svg {
+  width: 100%;
+  min-width: fit-content;
+  display: block;
 }
 
 h2 {
