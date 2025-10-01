@@ -11,6 +11,7 @@ import { SeverityParams } from "../vuln-cards-mock-data";
 })
 export class VulnCardComponent {
   @Input() card: any;
+  expanded = false;
 
   get severityColor() {
     // Use color from SeverityParams, fallback to #0f93bb

@@ -1,26 +1,30 @@
 <div class="vuln-card">
+  <!-- LEFT -->
   <div class="vuln-card__left">
-    <!-- Severity square -->
     <div class="severity-square" [ngStyle]="{ background: severityColor }">
       <span class="severity-letter">{{ severityAbbr }}</span>
     </div>
-    <!-- Source icon -->
     <div class="source-icon-bg" [ngStyle]="{ background: severityColor }">
       <img class="source-icon" [src]="sourceIcon" alt="source" />
     </div>
   </div>
+
+  <!-- MAIN -->
   <div class="vuln-card__main">
+    <!-- Top Row -->
     <div class="main-top-row">
       <button class="copy-btn" title="Copy ID">
         <img src="assets/icons/copy-icon.svg" alt="copy" />
       </button>
       <span class="vuln-id">{{ card.id }}</span>
+
       <img
         *ngIf="card.disputed"
         class="disputed-icon"
         src="assets/icons/disputed-icon-new.svg"
         alt="disputed"
       />
+
       <span *ngIf="card.cvss" class="cvss-pill">
         {{ card.cvss }}
         <span style="display: inline-flex; align-items: center">
@@ -36,13 +40,17 @@
           </span>
         </span>
       </span>
+
       <span *ngIf="card.epss" class="epss-pill">
         {{ card.epss * 100 | number : "1.0-0" }}% EPSS
       </span>
+
       <button class="redirect-btn" title="Go to details">
         <img src="assets/icons/export-icon-new.svg" alt="redirect" />
       </button>
     </div>
+
+    <!-- Bottom Info Rows -->
     <div class="main-bottom-row">
       <div style="display: flex; align-items: center; gap: 16px">
         <span class="date-info">
@@ -50,28 +58,25 @@
           <span style="font-weight: bold">Published:</span>
           {{ card.publishedAt * 1000 | date : "MMM d, yyyy" }}
         </span>
+
         <span class="component-info">
           <img src="assets/icons/content-copy-icon-new.svg" alt="component" />
-          {{ card.components?.[0]?.name
-
-
-
-          }}<span *ngIf="card.components?.[0]?.versions"
-            >, versions: {{ card.components[0].versions }}</span
-          >
+          {{ card.components?.[0]?.name }}
+          <span *ngIf="card.components?.[0]?.versions">
+            , versions: {{ card.components[0].versions }}
+          </span>
         </span>
       </div>
+
       <div
         style="margin-top: 4px; display: flex; align-items: center; gap: 16px"
       >
-        <span
-          class="date-info"
-          style="display: inline-flex; align-items: center"
-        >
+        <span class="date-info">
           <img src="assets/icons/calendar-new.svg" alt="calendar" />
           <span style="font-weight: bold">Updated:</span>
           {{ card.modifiedAt * 1000 | date : "MMM d, yyyy" }}
         </span>
+
         <span class="desc-info">
           <img src="assets/icons/desc-icon-new.svg" alt="desc" />
           {{ card.summary }}
@@ -79,13 +84,42 @@
       </div>
     </div>
   </div>
+  <!-- RIGHT -->
   <div class="vuln-card__right">
-    <div class="vdp-vex-row">
-      <span class="vdp-pill">VDP</span>
-      <span class="vex-pill">VEX</span>
+    <div class="vuln-left">
+      <div class="vdp-vex-row">
+        <span class="vdp-pill">VDP</span>
+        <span class="vex-pill">VEX</span>
+      </div>
+      <div class="imported-indicator">
+        <img src="assets/icons/imported-icon-new.svg" alt="imported" />
+      </div>
     </div>
-    <div class="imported-indicator">
-      <img src="assets/icons/imported-icon-new.svg" alt="imported" />
+    <div class="expand-row">
+      <button
+        class="expand-btn"
+        (click)="expanded = !expanded"
+        title="Expand/Collapse"
+      >
+        <img
+          src="assets/icons/chevron-down.svg"
+          [class.expanded]="expanded"
+          alt="expand/collapse"
+        />
+      </button>
     </div>
   </div>
+</div>
+
+<!-- Expanded section OUTSIDE main card -->
+<div *ngIf="expanded" class="expanded-section">
+  <ng-container *ngIf="card.cwes?.length; else noCwe">
+    <div *ngFor="let cwe of card.cwes" class="cwe-item">
+      <div class="cwe-desc">{{ cwe.description }}</div>
+      <div class="cwe-id">{{ cwe.id }}</div>
+    </div>
+  </ng-container>
+  <ng-template #noCwe>
+    <div class="no-content">No content found</div>
+  </ng-template>
 </div>
