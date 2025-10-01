@@ -319,6 +319,75 @@ export class TreeChartComponent {
         return d.children ? `rotate(90, ${this.rectX - 20}, 5)` : "";
       });
 
+    // Composite asset nodes for each parent
+    // nodeEnter.each((d: any, i: number, nodes: any) => {
+    //   const g = d3.select(nodes[i]);
+    //   const assetChildren = d.data.children?.filter(
+    //     (c: any) => c.model === "asset"
+    //   );
+    //   if (assetChildren && assetChildren.length > 0) {
+    //     const cardWidth = 200;
+    //     const rowHeight = 22;
+    //     const cardHeight = 30 + assetChildren.length * rowHeight;
+    //     const groupColor = getNodeColor(d);
+    //     const assetGroup = g
+    //       .append("g")
+    //       .attr(
+    //         "transform",
+    //         `translate(${this.rectX + 40},${-cardHeight / 2})`
+    //       );
+    //     // Asset card box
+    //     assetGroup
+    //       .append("rect")
+    //       .attr("width", cardWidth)
+    //       .attr("height", cardHeight)
+    //       .attr("rx", 10)
+    //       .attr("ry", 10)
+    //       .attr("fill", "#fff")
+    //       .attr("stroke", groupColor)
+    //       .attr("stroke-width", 2.5);
+    //     // Asset list
+    //     assetChildren.forEach((asset: any, idx: number) => {
+    //       // Icon background
+    //       assetGroup
+    //         .append("rect")
+    //         .attr("x", 12)
+    //         .attr("y", 18 + idx * rowHeight)
+    //         .attr("width", 24)
+    //         .attr("height", 24)
+    //         .attr("rx", 6)
+    //         .attr("fill", groupColor);
+    //       // Icon image
+    //       assetGroup
+    //         .append("image")
+    //         .attr("href", "/assets/icons/asset-card-icon-item.svg")
+    //         .attr("x", 16)
+    //         .attr("y", 22 + idx * rowHeight)
+    //         .attr("width", 16)
+    //         .attr("height", 16);
+    //       // Asset name/version
+    //       assetGroup
+    //         .append("text")
+    //         .attr("x", 44)
+    //         .attr("y", 34 + idx * rowHeight)
+    //         .attr("font-size", "13px")
+    //         .attr("font-weight", "500")
+    //         .attr("fill", "#263238")
+    //         .text(
+    //           asset.version ? `${asset.name} (${asset.version})` : asset.name
+    //         );
+    //     });
+    //     // Optional: connect line between group card and asset card
+    //     g.append("line")
+    //       .attr("x1", this.rectX)
+    //       .attr("y1", 0)
+    //       .attr("x2", this.rectX + 40)
+    //       .attr("y2", 0)
+    //       .attr("stroke", groupColor)
+    //       .attr("stroke-width", 1.5);
+    //   }
+    // });
+
     // Transition nodes to their new position
     const nodeUpdate = node
       .merge(nodeEnter)
