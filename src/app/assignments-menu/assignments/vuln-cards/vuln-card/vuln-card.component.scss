@@ -1,0 +1,245 @@
+:host {
+  display: block;
+}
+
+.vuln-card {
+  display: flex;
+  align-items: center;
+  min-width: 320px;
+  max-width: 100%;
+  height: 120px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  margin: 12px 0;
+  background: #fff;
+  transition: box-shadow 0.2s;
+}
+
+.vuln-card__left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+.severity-square {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 8px;
+  background: #0f93bb; // fallback color
+}
+
+.severity-square .severity-letter {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.source-icon-bg {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.source-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.vuln-card__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 0 16px;
+}
+
+.main-top-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.main-bottom-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.date-info {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #64748b;
+  gap: 4px;
+}
+
+.date-info img {
+  width: 16px;
+  height: 16px;
+}
+
+.component-info {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #f3bb2d;
+  gap: 4px;
+}
+
+.component-info img {
+  width: 16px;
+  height: 16px;
+}
+
+.desc-info {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #64748b;
+  gap: 4px;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desc-info img {
+  width: 16px;
+  height: 16px;
+}
+
+.copy-btn,
+.redirect-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.copy-btn img,
+.redirect-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.vuln-id {
+  font-size: 16px;
+  font-weight: 600;
+  color: #263238;
+  margin-right: 6px;
+}
+
+.disputed-icon {
+  width: 60px;
+  height: 20px;
+  margin-right: 6px;
+}
+
+.cvss-pill {
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  padding: 2px 10px;
+  font-size: 14px;
+  border: 1px solid #f3bb2d;
+  font-weight: 500;
+  background: white;
+  color: #f3bb2d;
+  margin-right: 6px;
+  gap: 4px;
+}
+.cvss-pill img {
+  width: 16px;
+  height: 16px;
+}
+
+.epss-pill {
+  display: inline-block;
+  border-radius: 12px;
+  background: white;
+  color: #0f93bb;
+  border: 1px solid #0f93bb;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 2px 10px;
+  margin-right: 6px;
+}
+
+.vuln-card__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  width: 80px;
+  height: 100%;
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+
+.vdp-vex-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.vdp-pill,
+.vex-pill {
+  width: 38px;
+  height: 38px;
+  background: #fff;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #263238;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+.imported-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+.imported-indicator img {
+  width: 90px;
+  height: 30px;
+}
+
+@media (max-width: 600px) {
+  .vuln-card {
+    min-width: 220px;
+    height: 100px;
+    border-radius: 10px;
+  }
+  .vuln-card__left,
+  .vuln-card__right {
+    width: 48px;
+  }
+  .vuln-card__main {
+    padding: 0 8px;
+  }
+}
