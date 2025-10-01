@@ -1,0 +1,12 @@
+<h3>Assignments Menu</h3>
+
+<div class="buttons-container">
+    @for (chartType of AssignmentTypesKeys; track $index) {
+
+    <div class="button-with-preview-wrapper">
+        <button (click)="chartSelected(chartType.param)">
+            {{chartType.name}}
+        </button>
+    </div>
+    }
+</div>

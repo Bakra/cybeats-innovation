@@ -1,0 +1,22 @@
+@if (!isPreview) {
+<button (click)="backToMain()">
+  Back
+</button>
+
+<h2>Tree Chart</h2>
+
+<button (click)="changeZoom('-')">
+  -
+</button>
+
+<button (click)="changeZoom('+')">
+  +
+</button>
+<button (click)="changeZoom('reset')">
+  Reset
+</button>
+
+}
+<div class="tree-chart-wrapper">
+  <figure id="tree" [class]="isPreview ? 'tree-chart-limited-size' : 'tree-chart-full-size'"></figure>
+</div>
