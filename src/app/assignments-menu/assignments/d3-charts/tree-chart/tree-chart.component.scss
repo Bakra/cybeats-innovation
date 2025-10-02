@@ -1,3 +1,9 @@
+::ng-deep {
+  figure#tree svg {
+	min-width: 100% !important;
+  }
+}
+
 .tree-chart-limited-size {
   width: 150px;
   height: 150px;
@@ -20,8 +26,9 @@
 
 .tree-chart-wrapper {
   width: 100%;
-  height: calc(100vh - 113px);
+  height: calc(100vh - 125px);
   overflow: auto; // only chart scrolls, page stays clean
+  position: relative;
 }
 
 figure#tree {
@@ -31,12 +38,15 @@ figure#tree {
   overflow: auto; // scrollbars appear only when needed
   display: flex;
   align-items: flex-start;
+  min-width: fit-content;
+  position: relative;
 }
 
 #tree {
   width: 100%;
   min-width: fit-content;
   overflow-x: auto;
+  overflow-y: visible;
   display: flex;
   justify-content: flex-start;
 }
@@ -46,6 +56,11 @@ figure#tree {
   min-width: fit-content;
   min-height: fit-content;
   display: block;
+  overflow: visible;
+  max-width: none;
+  max-height: none;
+  width: auto;
+  height: auto;
 }
 
 h2 {

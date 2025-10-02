@@ -1,6 +1,7 @@
 <button (click)="backToMain()">Back</button>
 <h2>Vulnerability Cards List</h2>
-
-<div *ngFor="let card of vulnList" style="width: 100%">
-  <app-vuln-card [card]="card"></app-vuln-card>
+<div class="vuln-cards-container" #vulnCardsContainer (scroll)="onScroll($event)">
+	<div *ngFor="let card of vulnList" style="width: 100%">
+	  <app-vuln-card [card]="card"></app-vuln-card>
+	</div>
 </div>

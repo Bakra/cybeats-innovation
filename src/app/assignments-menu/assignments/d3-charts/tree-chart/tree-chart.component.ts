@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import { treeChartMockData } from "../charts-mock-data";
 import * as d3 from "d3";
@@ -10,7 +10,7 @@ import * as d3 from "d3";
   templateUrl: "./tree-chart.component.html",
   styleUrl: "./tree-chart.component.scss",
 })
-export class TreeChartComponent {
+export class TreeChartComponent implements OnDestroy {
   @Input() isPreview: boolean = false;
 
   private chartData = treeChartMockData;
@@ -22,7 +22,7 @@ export class TreeChartComponent {
   diagonal: any;
 
   width: number;
-  margin: any = { top: 100, bottom: 100, left: 100, right: 100 };
+  margin: any = { top: 40, bottom: 40, left: 40, right: 40 };
   duration: number = 750;
 
   rectX: number = 240;
@@ -32,9 +32,39 @@ export class TreeChartComponent {
 
   constructor(private router: Router) {}
 
+  private calculateMaxWidth(): number {
+    let maxWidth = 0;
+    let visibleNodes = 0;
+    
+    this.root.eachBefore((node: any) => {
+      let nodeWidth = node.y + this.rectX + 30;
+      if (nodeWidth > maxWidth) maxWidth = nodeWidth;
+      visibleNodes++;
+    });
+    
+    let safetyMargin = visibleNodes > 3 ? 60 : 30;
+    
+    return maxWidth + this.margin.right + safetyMargin;
+  }
+
   ngOnInit(): void {
     this.width = 928;
     this.renderTreeChart();
+    
+    window.addEventListener('resize', () => {
+      this.handleResize();
+    });
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', () => {
+      this.handleResize();
+    });
+  }
+
+  private handleResize(): void {
+    this.width = Math.max(window.innerWidth, 150 * this.root.height) - 20;
+    this.update(null, this.root);
   }
 
   backToMain() {
@@ -44,7 +74,7 @@ export class TreeChartComponent {
   changeZoom(trent: string) {
     if (trent === "-") this.width = this.width * 1.5;
     else if (trent === "+") this.width = this.width / 1.5;
-    else if (trent === "reset") this.width = 300 * this.root.height;
+    else if (trent === "reset") this.width = Math.max(window.innerWidth, 150 * this.root.height) - 20;
 
     this.update(null, this.root);
   }
@@ -52,7 +82,7 @@ export class TreeChartComponent {
   renderTreeChart() {
     this.root = d3.hierarchy(this.chartData, (d) => d.children);
 
-    this.width = Math.max(window.innerWidth, 350 * this.root.height);
+    this.width = Math.max(window.innerWidth, 150 * this.root.height) - 20;
 
     this.tree = d3.tree().nodeSize([this.dx, this.dy]);
 
@@ -125,35 +155,56 @@ export class TreeChartComponent {
   }
 
   update(event: any, source: any) {
-    const duration = event?.altKey ? 2500 : 500;
-    const nodes = this.root.descendants().reverse();
-    const links = this.root.links();
+    let duration = event?.altKey ? 2500 : 500;
+    let nodes = this.root.descendants().reverse();
+    let links = this.root.links();
 
     this.tree(this.root);
 
     let left = this.root;
     let right = this.root;
+    let top = this.root;
+    let bottom = this.root;
+    
     this.root.eachBefore((node: any) => {
       if (node.x < left.x) left = node;
       if (node.x > right.x) right = node;
+      if (node.y < top.y) top = node;
+      if (node.y > bottom.y) bottom = node;
+    });
+    
+    let maxRightPosition = bottom.y;
+    this.root.eachBefore((node: any) => {
+      if (node.y > maxRightPosition) maxRightPosition = node.y;
     });
 
-    const height = right.x - left.x + this.margin.top + this.margin.bottom;
+    let height = right.x - left.x + this.margin.top + this.margin.bottom;
+    
+    let calculatedMaxWidth = this.calculateMaxWidth();
+    
+    // Calculate width based on content, not zoom (zoom is handled by transform)
+    let actualWidth = Math.max(
+      this.width,
+      calculatedMaxWidth,
+      Math.min((this.root.height + 1) * this.dx, window.innerWidth * 1.2)
+    ) - 20;
 
-    const transition = this.svg
+    let transition = this.svg
       .transition()
       .duration(duration)
+      .attr("width", actualWidth)
       .attr("height", height)
       .attr("viewBox", [
         -this.margin.left,
         left.x - this.margin.top,
-        this.width,
+        actualWidth,
         height,
-      ]);
+      ])
+      .attr("style", `min-width:100vw; max-width:none; height:auto; font:10px sans-serif; user-select:none; width: ${actualWidth}px;`);
 
-    const node = this.gNode.selectAll("g").data(nodes, (d: any) => d.id);
+    let node = this.gNode.selectAll("g").data(nodes, (d: any) => d.id);
 
-    const nodeEnter = node
+    let nodeEnter = node
       .enter()
       .append("g")
       .attr("transform", (d: any) => `translate(${source.y0},${source.x0})`)
@@ -166,7 +217,6 @@ export class TreeChartComponent {
 
     const getNodeColor = (d: any) => d.data.groupColor || "#999";
 
-    // OUTER border
     nodeEnter
       .append("rect")
       .attr("class", "outer-rect")

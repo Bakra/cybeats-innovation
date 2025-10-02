@@ -1,3 +1,10 @@
 h2 {
   text-align: center;
 }
+
+.vuln-cards-container {
+	overflow-y: auto;
+    height: calc(100vh - 105px);
+	margin: 0 -5px;
+    padding: 0 5px;
+}
