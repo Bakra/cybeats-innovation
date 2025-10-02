@@ -237,7 +237,7 @@ export class TreeChartComponent {
       .append("rect")
       .attr("width", this.rectX)
       .attr("height", this.rectY)
-      .attr("y", -this.rectY / 2)
+      .attr("y", -this.rectY / 2 + 2)
       .attr("rx", 12)
       .attr("ry", 12)
       .attr("fill", "#fff")
@@ -249,7 +249,7 @@ export class TreeChartComponent {
     nodeEnter
       .append("rect")
       .attr("x", 12)
-      .attr("y", -this.rectY / 2 + 10)
+      .attr("y", -this.rectY / 2 + 15)
       .attr("width", 32)
       .attr("height", 32)
       .attr("rx", 8)
@@ -268,7 +268,7 @@ export class TreeChartComponent {
         }
       })
       .attr("x", 16)
-      .attr("y", -this.rectY / 2 + 14)
+      .attr("y", -this.rectY / 2 + 18)
       .attr("width", 24)
       .attr("height", 24);
 
@@ -276,7 +276,7 @@ export class TreeChartComponent {
     nodeEnter
       .append("text")
       .attr("x", 54)
-      .attr("y", -this.rectY / 2 + 22)
+      .attr("y", -this.rectY / 2 + 29)
       .attr("text-anchor", "start")
       .attr("font-size", "16px")
       .attr("font-weight", "600")
@@ -290,7 +290,7 @@ export class TreeChartComponent {
     nodeEnter
       .append("text")
       .attr("x", 54)
-      .attr("y", -this.rectY / 2 + 40)
+      .attr("y", -this.rectY / 2 + 44)
       .attr("text-anchor", "start")
       .attr("font-size", "13px")
       .attr("font-weight", "500")
@@ -307,8 +307,8 @@ export class TreeChartComponent {
     nodeEnter
       .append("text")
       .attr("class", "expand-indicator")
-      .attr("x", this.rectX - 20)
-      .attr("y", 5)
+      .attr("x", this.rectX + 12) // Move 12px outside right border
+      .attr("y", 5) // Vertically centered
       .attr("text-anchor", "middle")
       .attr("font-size", "20px")
       .attr("font-weight", "bold")
@@ -316,7 +316,8 @@ export class TreeChartComponent {
       .attr("opacity", (d: any) => (d._children || d.children ? 1 : 0))
       .text("›")
       .attr("transform", (d: any) => {
-        return d.children ? `rotate(90, ${this.rectX - 20}, 5)` : "";
+        // Rotate around the chevron's own position
+        return d.children ? `rotate(90, ${this.rectX + 12}, 5)` : "";
       });
 
     // Composite asset nodes for each parent
