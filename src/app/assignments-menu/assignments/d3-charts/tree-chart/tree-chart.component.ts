@@ -81,13 +81,13 @@ export class TreeChartComponent {
     this.rectY = 60;
 
     // Vertical spacing between nodes
-    this.dx = 120;
+    this.dx = 140;
 
     // Calculate width based on tree depth
     this.width = Math.max(window.innerWidth, 350 * this.root.height);
 
     // Horizontal spacing between levels
-    this.dy = 300;
+    this.dy = 400;
 
     this.tree = d3.tree().nodeSize([this.dx, this.dy]);
 
@@ -303,22 +303,18 @@ export class TreeChartComponent {
         return `${g}/${a}`;
       });
 
-    // Expand/collapse indicator (chevron)
+    // Enter chevron
     nodeEnter
       .append("text")
       .attr("class", "expand-indicator")
-      .attr("x", this.rectX + 12) // Move 12px outside right border
-      .attr("y", 5) // Vertically centered
+      .attr("x", this.rectX + 12) // place at right edge
+      .attr("y", 5) // vertical position relative to rect
       .attr("text-anchor", "middle")
       .attr("font-size", "20px")
       .attr("font-weight", "bold")
       .attr("fill", "#94A3B8")
       .attr("opacity", (d: any) => (d._children || d.children ? 1 : 0))
-      .text("›")
-      .attr("transform", (d: any) => {
-        // Rotate around the chevron's own position
-        return d.children ? `rotate(90, ${this.rectX + 12}, 5)` : "";
-      });
+      .text("›");
 
     // Composite asset nodes for each parent
     // nodeEnter.each((d: any, i: number, nodes: any) => {
@@ -403,10 +399,13 @@ export class TreeChartComponent {
       .select(".expand-indicator")
       .transition(transition)
       .attr("transform", (d: any) => {
-        return d.children ? `rotate(90, ${this.rectX - 20}, 5)` : "";
+        const cx = this.rectX + 10; // same as .attr("x")
+        const cy = 0; // same as .attr("y")
+        return d.children
+          ? `rotate(90, ${cx}, ${cy})`
+          : `rotate(0, ${cx}, ${cy})`;
       })
       .attr("opacity", (d: any) => (d._children || d.children ? 1 : 0));
-
     // Transition exiting nodes
     const nodeExit = node
       .exit()
