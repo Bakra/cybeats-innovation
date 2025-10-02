@@ -12,10 +12,25 @@
   margin: 0;
 }
 
+// .chart-wrapper {
+//   width: 100vw;
+//   overflow-x: auto;
+//   height: 100%;
+// }
+
 .tree-chart-wrapper {
-  width: 100vw;
-  overflow-x: auto;
+  width: 100%;
+  height: calc(100vh - 113px);
+  overflow: auto; // only chart scrolls, page stays clean
+}
+
+figure#tree {
+  margin: 0;
+  width: 100%;
   height: 100%;
+  overflow: auto; // scrollbars appear only when needed
+  display: flex;
+  align-items: flex-start;
 }
 
 #tree {
@@ -26,9 +41,10 @@
   justify-content: flex-start;
 }
 
-#tree svg {
-  width: 100%;
+#tree svg,
+.tree-svg {
   min-width: fit-content;
+  min-height: fit-content;
   display: block;
 }
 
@@ -62,4 +78,24 @@ h2 {
   font-weight: bold;
   fill: #263238;
   opacity: 0.85;
+}
+
+/* Expand indicator styles */
+.expand-circle {
+  cursor: pointer;
+  fill: #f1f5f9; // light gray background
+  stroke: #cbd5e1; // border around circle
+  transition: fill 0.2s, stroke 0.2s;
+}
+
+.expand-circle:hover {
+  fill: #e2e8f0; // slightly darker gray on hover
+}
+
+.expand-indicator {
+  font-size: 20px;
+  font-weight: bold;
+  fill: #64748b; // muted dark gray icon
+  text-anchor: middle;
+  pointer-events: none;
 }
