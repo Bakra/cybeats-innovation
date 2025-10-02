@@ -232,18 +232,50 @@ export class TreeChartComponent {
       return d.data.groupColor || "#999";
     };
 
-    // Card background with colored border
+    // OUTER rect = main border
     nodeEnter
       .append("rect")
+      .attr("class", "outer-rect")
       .attr("width", this.rectX)
       .attr("height", this.rectY)
       .attr("y", -this.rectY / 2 + 2)
-      .attr("rx", 12)
-      .attr("ry", 12)
+      .attr("rx", 14)
+      .attr("ry", 14)
+      .attr("fill", "none")
+      .attr("stroke-width", 3)
+      .attr("stroke", (d: any) => getNodeColor(d));
+
+    // INNER SHADED rect = padding area
+    nodeEnter
+      .append("rect")
+      .attr("class", "inner-shade")
+      .attr("width", this.rectX - 6) // slightly smaller than outer
+      .attr("height", this.rectY - 6)
+      .attr("x", 3)
+      .attr("y", -this.rectY / 2 + 5)
+      .attr("rx", 10)
+      .attr("ry", 10)
+      .attr(
+        "fill",
+        (d: any) =>
+          d3.color(getNodeColor(d))?.copy({ opacity: 0.12 })?.formatRgb() ||
+          "#f1f5f9"
+      )
+      .attr("stroke", "none");
+
+    // CONTENT rect = white card
+    nodeEnter
+      .append("rect")
+      .attr("class", "content-rect")
+      .attr("width", this.rectX - 12) // inset further
+      .attr("height", this.rectY - 12)
+      .attr("x", 6)
+      .attr("y", -this.rectY / 2 + 8)
+      .attr("rx", 8)
+      .attr("ry", 8)
       .attr("fill", "#fff")
-      .attr("stroke-width", 2.5)
-      .attr("stroke", (d: any) => getNodeColor(d))
-      .attr("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.1))");
+      .attr("stroke", "none")
+      .attr("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.06))");
 
     // Icon background with group color
     nodeEnter
