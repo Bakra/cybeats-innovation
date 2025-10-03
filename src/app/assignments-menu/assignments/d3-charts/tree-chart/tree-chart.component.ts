@@ -19,9 +19,11 @@ export class TreeChartComponent implements OnDestroy {
   svg: any;
   gLink: any;
   gNode: any;
+  gContainer: any;
   diagonal: any;
 
   width: number;
+  zoomScale: number = 1;
   margin: any = { top: 40, bottom: 40, left: 40, right: 40 };
   duration: number = 750;
 
@@ -37,12 +39,13 @@ export class TreeChartComponent implements OnDestroy {
     let visibleNodes = 0;
     
     this.root.eachBefore((node: any) => {
-      let nodeWidth = node.y + this.rectX + 30;
+      let nodeWidth = node.y + this.rectX + 50;
+	  
       if (nodeWidth > maxWidth) maxWidth = nodeWidth;
       visibleNodes++;
     });
     
-    let safetyMargin = visibleNodes > 3 ? 60 : 30;
+    let safetyMargin = visibleNodes > 3 ? 60 : 40;
     
     return maxWidth + this.margin.right + safetyMargin;
   }
@@ -63,7 +66,6 @@ export class TreeChartComponent implements OnDestroy {
   }
 
   private handleResize(): void {
-    this.width = Math.max(window.innerWidth, 150 * this.root.height) - 20;
     this.update(null, this.root);
   }
 
@@ -72,9 +74,17 @@ export class TreeChartComponent implements OnDestroy {
   }
 
   changeZoom(trent: string) {
-    if (trent === "-") this.width = this.width * 1.5;
-    else if (trent === "+") this.width = this.width / 1.5;
-    else if (trent === "reset") this.width = Math.max(window.innerWidth, 150 * this.root.height) - 20;
+    const zoomStep = 0.2;
+    const minZoom = 0.3;
+    const maxZoom = 3;
+
+    if (trent === "-") {
+      this.zoomScale = Math.max(minZoom, this.zoomScale - zoomStep);
+    } else if (trent === "+") {
+      this.zoomScale = Math.min(maxZoom, this.zoomScale + zoomStep);
+    } else if (trent === "reset") {
+      this.zoomScale = 1;
+    }
 
     this.update(null, this.root);
   }
@@ -82,7 +92,7 @@ export class TreeChartComponent implements OnDestroy {
   renderTreeChart() {
     this.root = d3.hierarchy(this.chartData, (d) => d.children);
 
-    this.width = Math.max(window.innerWidth, 150 * this.root.height) - 20;
+    this.width = 800;
 
     this.tree = d3.tree().nodeSize([this.dx, this.dy]);
 
@@ -106,17 +116,21 @@ export class TreeChartComponent implements OnDestroy {
       ])
       .attr(
         "style",
-        "min-width:100vw; max-width:none; height:auto; font:10px sans-serif; user-select:none;"
+        "max-width:none; font:10px sans-serif; user-select:none; display: block;"
       );
 
-    this.gLink = this.svg
+    this.gContainer = this.svg
+      .append("g")
+      .attr("class", "zoom-container");
+
+    this.gLink = this.gContainer
       .append("g")
       .attr("fill", "none")
       .attr("stroke", "#CBD5E1")
       .attr("stroke-opacity", 0.6)
       .attr("stroke-width", 2);
 
-    this.gNode = this.svg
+    this.gNode = this.gContainer
       .append("g")
       .attr("cursor", "pointer")
       .attr("pointer-events", "all");
@@ -178,29 +192,35 @@ export class TreeChartComponent implements OnDestroy {
       if (node.y > maxRightPosition) maxRightPosition = node.y;
     });
 
-    let height = right.x - left.x + this.margin.top + this.margin.bottom;
+    let height = right.x - left.x + this.margin.top + this.margin.bottom + this.rectY;
+    let contentBasedWidth = maxRightPosition + this.rectX + 50 + this.margin.right + 50;
     
     let calculatedMaxWidth = this.calculateMaxWidth();
     
-    // Calculate width based on content, not zoom (zoom is handled by transform)
-    let actualWidth = Math.max(
-      this.width,
-      calculatedMaxWidth,
-      Math.min((this.root.height + 1) * this.dx, window.innerWidth * 1.2)
-    ) - 20;
+    let baseWidth = Math.max(
+      contentBasedWidth,
+      calculatedMaxWidth
+    );
+    let actualWidth = baseWidth * this.zoomScale;
+    let actualHeight = height * this.zoomScale;
+
+    this.gContainer
+      .transition()
+      .duration(duration)
+      .attr("transform", null);
 
     let transition = this.svg
       .transition()
       .duration(duration)
       .attr("width", actualWidth)
-      .attr("height", height)
+      .attr("height", actualHeight)
       .attr("viewBox", [
         -this.margin.left,
         left.x - this.margin.top,
-        actualWidth,
+        baseWidth,
         height,
       ])
-      .attr("style", `min-width:100vw; max-width:none; height:auto; font:10px sans-serif; user-select:none; width: ${actualWidth}px;`);
+      .attr("style", `max-width:none; font:10px sans-serif; user-select:none; display: block;`);
 
     let node = this.gNode.selectAll("g").data(nodes, (d: any) => d.id);
 
